@@ -18,7 +18,7 @@ while IFS= read -r ext; do
   id=$(echo "${ext}" | jq -r '.id')
   update_url=$(echo "${ext}" | jq -r '.update_url')
   entry=$(jq -n --arg mode "force_installed" --arg url "${update_url}" \
-    '{installation_mode: $mode, update_url: $url}')
+    '{installation_mode: $mode, update_url: $url, toolbar_pin: "force_pinned"}')
 
   config_file="${CONFIGS_DIR}/${id}.json"
   if [[ -f "${config_file}" ]]; then
