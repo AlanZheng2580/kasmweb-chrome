@@ -1,0 +1,9 @@
+{
+  "extensions": [
+    {
+      "id": "onnfghpihccifgojkpnnncpagjcdbjod",
+      "name": "Proxy Switcher and Manager",
+      "update_url": "https://clients2.google.com/service/update2/crx"
+    }
+  ]
+}

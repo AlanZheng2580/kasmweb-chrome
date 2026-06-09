@@ -1,0 +1,15 @@
+services:
+  kasm-chrome:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "6901:6901"
+    environment:
+      VNC_PW: password
+      VNC_BLACKLIST_THRESHOLD: 0
+      VNC_BLACKLIST_TIMEOUT: 0
+    shm_size: "512m"
+    volumes:
+      - ./extensions.json:/opt/kasm/extensions.json:ro
+      - ./extension-configs:/opt/kasm/extension-configs:ro
