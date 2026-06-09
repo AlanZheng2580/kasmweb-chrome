@@ -3,7 +3,8 @@ set -euo pipefail
 
 EXTENSIONS_JSON="/opt/kasm/extensions.json"
 CONFIGS_DIR="/opt/kasm/extension-configs"
-POLICY_DIR="/etc/chromium/policies/managed"
+# kasmweb/chrome ships Google Chrome, which reads from /etc/opt/chrome/policies/managed/
+POLICY_DIR="/etc/opt/chrome/policies/managed"
 POLICY_FILE="${POLICY_DIR}/extensions.json"
 
 mkdir -p "${POLICY_DIR}"
@@ -11,16 +12,23 @@ mkdir -p "${POLICY_DIR}"
 # Build ExtensionInstallForcelist array: ["id;update_url", ...]
 FORCELIST=$(jq '[.extensions[] | "\(.id);\(.update_url)"]' "${EXTENSIONS_JSON}")
 
-# Build ExtensionSettings object from per-extension config files
+# Build ExtensionSettings object: force_installed with update_url required
 EXTENSION_SETTINGS="{}"
-while IFS= read -r id; do
+while IFS= read -r ext; do
+  id=$(echo "${ext}" | jq -r '.id')
+  update_url=$(echo "${ext}" | jq -r '.update_url')
+  entry=$(jq -n --arg mode "force_installed" --arg url "${update_url}" \
+    '{installation_mode: $mode, update_url: $url}')
+
   config_file="${CONFIGS_DIR}/${id}.json"
   if [[ -f "${config_file}" ]]; then
-    policy=$(cat "${config_file}")
-    EXTENSION_SETTINGS=$(echo "${EXTENSION_SETTINGS}" | jq --arg id "${id}" --argjson policy "${policy}" \
-      '. + {($id): {installation_mode: "force_installed", "runtime_allowed_hosts": [], "policy": $policy}}')
+    managed_policy=$(cat "${config_file}")
+    entry=$(echo "${entry}" | jq --argjson p "${managed_policy}" '. + {managed_policy: $p}')
   fi
-done < <(jq -r '.extensions[].id' "${EXTENSIONS_JSON}")
+
+  EXTENSION_SETTINGS=$(echo "${EXTENSION_SETTINGS}" | jq --arg id "${id}" --argjson entry "${entry}" \
+    '. + {($id): $entry}')
+done < <(jq -c '.extensions[]' "${EXTENSIONS_JSON}")
 
 # Write final Chrome managed policy file
 jq -n \
