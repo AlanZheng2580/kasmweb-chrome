@@ -13,4 +13,5 @@ services:
     volumes:
       - ./extensions.json:/opt/kasm/extensions.json:ro
       - ./blacklist.json:/opt/kasm/blacklist.json:ro
+      - ./kasmvnc.yaml:/etc/kasmvnc/kasmvnc.yaml:ro
       - ./extension-configs:/opt/kasm/extension-configs:ro

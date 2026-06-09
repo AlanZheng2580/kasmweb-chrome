@@ -1,0 +1,6 @@
+server:
+  clipboard:
+    client_to_server:
+      enabled: false
+    server_to_client:
+      enabled: true
