@@ -1,4 +1,4 @@
-FROM kasmweb/chrome:1.18.0
+FROM kasmweb/chrome:1.19.0
 
 USER root
 
