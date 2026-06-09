@@ -2,6 +2,7 @@
 set -euo pipefail
 
 EXTENSIONS_JSON="/opt/kasm/extensions.json"
+BLACKLIST_JSON="/opt/kasm/blacklist.json"
 CONFIGS_DIR="/opt/kasm/extension-configs"
 # kasmweb/chrome ships Google Chrome, which reads from /etc/opt/chrome/policies/managed/
 POLICY_DIR="/etc/opt/chrome/policies/managed"
@@ -30,13 +31,18 @@ while IFS= read -r ext; do
     '. + {($id): $entry}')
 done < <(jq -c '.extensions[]' "${EXTENSIONS_JSON}")
 
+# Build URLBlocklist array from blacklist.json
+URL_BLOCKLIST=$(jq '[.domains[]]' "${BLACKLIST_JSON}")
+
 # Write final Chrome managed policy file
 jq -n \
   --argjson forcelist "${FORCELIST}" \
   --argjson settings "${EXTENSION_SETTINGS}" \
+  --argjson blocklist "${URL_BLOCKLIST}" \
   '{
     ExtensionInstallForcelist: $forcelist,
-    ExtensionSettings: $settings
+    ExtensionSettings: $settings,
+    URLBlocklist: $blocklist
   }' > "${POLICY_FILE}"
 
 echo "Chrome extension policy written to ${POLICY_FILE}"

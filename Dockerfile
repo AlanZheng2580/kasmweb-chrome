@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends jq \
     && rm -rf /var/lib/apt/lists/*
 
 COPY extensions.json /opt/kasm/extensions.json
+COPY blacklist.json /opt/kasm/blacklist.json
 COPY extension-configs/ /opt/kasm/extension-configs/
 COPY scripts/install-extensions.sh /opt/kasm/install-extensions.sh
 

@@ -12,4 +12,5 @@ services:
     shm_size: "512m"
     volumes:
       - ./extensions.json:/opt/kasm/extensions.json:ro
+      - ./blacklist.json:/opt/kasm/blacklist.json:ro
       - ./extension-configs:/opt/kasm/extension-configs:ro
