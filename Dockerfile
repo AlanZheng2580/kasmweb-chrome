@@ -13,7 +13,7 @@ COPY scripts/configure.sh /opt/kasm/configure.sh
 
 RUN chmod +x /opt/kasm/configure.sh \
     && /opt/kasm/configure.sh \
-    && chown -R 1000:1000 /etc/opt/chrome/policies/managed \
+    && chown -R 1000:1000 /etc/opt/chrome/policies \
     && sed -i '1a /opt/kasm/configure.sh || true' /dockerstartup/custom_startup.sh
 
 USER 1000
