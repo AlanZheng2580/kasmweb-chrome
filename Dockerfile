@@ -9,9 +9,11 @@ COPY extensions.json /opt/kasm/extensions.json
 COPY blacklist.json /opt/kasm/blacklist.json
 COPY kasmvnc.yaml /etc/kasmvnc/kasmvnc.yaml
 COPY extension-configs/ /opt/kasm/extension-configs/
-COPY scripts/install-extensions.sh /opt/kasm/install-extensions.sh
+COPY scripts/configure.sh /opt/kasm/configure.sh
 
-RUN chmod +x /opt/kasm/install-extensions.sh \
-    && /opt/kasm/install-extensions.sh
+RUN chmod +x /opt/kasm/configure.sh \
+    && /opt/kasm/configure.sh \
+    && chown -R 1000:1000 /etc/opt/chrome/policies/managed \
+    && sed -i '1a /opt/kasm/configure.sh || true' /dockerstartup/custom_startup.sh
 
 USER 1000
