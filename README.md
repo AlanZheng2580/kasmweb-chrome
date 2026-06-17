@@ -83,6 +83,39 @@ For networks that cannot reach the Chrome Web Store, package the CRX into the Do
 Remove the entry from `chrome-policies/managed/policy.json`, delete the CRX and
 update XML if they are no longer needed, then run `make restart`.
 
+## Managing Proxy PAC
+
+Chrome uses the native policy value at `ProxySettings.ProxyPacUrl` in
+`chrome-policies/managed/policy.json`. Proxy Switcher and Manager uses
+`ExtensionSettings.onnfghpihccifgojkpnnncpagjcdbjod.managed_policy.import-json`
+to show the same PAC profile in the extension UI. Keep both values in sync.
+
+1. Edit the readable PAC source:
+   ```bash
+   $EDITOR chrome-policies/proxy.pac
+   ```
+
+2. Generate the replacement policy values:
+   ```bash
+   tools/generate-proxy-pac-url.sh
+   ```
+
+   To use a different extension profile name:
+   ```bash
+   tools/generate-proxy-pac-url.sh chrome-policies/proxy.pac "Corporate PAC"
+   ```
+
+3. Copy the generated `"ProxyPacUrl": "data:..."` line into:
+   `chrome-policies/managed/policy.json -> ProxySettings.ProxyPacUrl`
+
+4. Copy the generated `"import-json": "..."` line into:
+   `chrome-policies/managed/policy.json -> ExtensionSettings.onnfghpihccifgojkpnnncpagjcdbjod.managed_policy.import-json`
+
+5. Rebuild and restart:
+   ```bash
+   make restart
+   ```
+
 ## Project Structure
 
 ```
@@ -92,9 +125,12 @@ update XML if they are no longer needed, then run `make restart`.
 ├── Makefile                       # Convenience commands
 ├── chrome-policies/managed/       # Pre-generated Chrome managed policies
 │   └── policy.json
+├── chrome-policies/proxy.pac      # Editable PAC source for ProxyPacUrl
 ├── offline-extensions/            # Optional CRX files for offline installs
 │   ├── updates/<extension-id>.xml  # Local Chrome update manifests
 │   └── <extension-id>.crx
+├── tools/                         # Local helper scripts
+│   └── generate-proxy-pac-url.sh
 └── kasmvnc.yaml                   # KasmVNC server settings
 ```
 

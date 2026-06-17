@@ -8,8 +8,10 @@ This repository builds a customized `kasmweb/chrome` container with managed Chro
 - `docker-compose.yml` defines the local `kasm-chrome` service, port mapping, environment, and KasmVNC mount.
 - `Makefile` provides the standard development commands.
 - `chrome-policies/managed/policy.json` is the committed Chrome managed policy.
+- `chrome-policies/proxy.pac` is the editable PAC source for `ProxySettings.ProxyPacUrl`.
 - `offline-extensions/<extension-id>.crx` stores bundled CRX packages.
 - `offline-extensions/updates/<extension-id>.xml` stores local Chrome update manifests.
+- `tools/generate-proxy-pac-url.sh` converts the PAC source into the policy data URL.
 - `kasmvnc.yaml` customizes the KasmVNC server.
 
 ## Build, Test, and Development Commands
@@ -27,6 +29,7 @@ The service is exposed at `https://localhost:6902` from `docker-compose.yml`; cr
 ## Coding Style & Naming Conventions
 
 Keep JSON files pretty-printed with two-space indentation. Name CRX and update manifest files exactly after the Chrome extension ID, for example `offline-extensions/onnfghpihccifgojkpnnncpagjcdbjod.crx` and `offline-extensions/updates/onnfghpihccifgojkpnnncpagjcdbjod.xml`. Policy changes should be made directly in `chrome-policies/managed/policy.json`.
+Keep helper scripts POSIX-friendly where practical and executable when they are intended to be run directly.
 
 ## Testing Guidelines
 
