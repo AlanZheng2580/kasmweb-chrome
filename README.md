@@ -44,7 +44,7 @@ Access at **https://localhost:6902** — accept the self-signed certificate warn
 
 3. Optionally create `extension-configs/<extension-id>.json` with managed policy settings.
 
-4. Rebuild:
+4. Update `chrome-policies/managed/policy.json`, then rebuild:
    ```bash
    make restart
    ```
@@ -68,12 +68,12 @@ For networks that cannot reach the Chrome Web Store, package the CRX into the Do
 
 3. Optionally create `extension-configs/<extension-id>.json` with managed policy settings.
 
-4. Rebuild the image:
+4. Add or update `offline-extensions/updates/<extension-id>.xml`, update `chrome-policies/managed/policy.json`, then rebuild the image:
    ```bash
    make rebuild
    ```
 
-During build/startup, `scripts/configure.sh` creates a local Chrome update manifest and sets the policy `update_url` to `file:///opt/kasm/offline-extensions/updates/<extension-id>.xml`.
+The Docker image copies pre-generated policy files. It does not run `scripts/configure.sh` during build or startup.
 
 ### Remove an extension
 
@@ -87,11 +87,15 @@ Remove the entry from `extensions.json` and delete its config file in `extension
 ├── docker-compose.yml             # Dev environment
 ├── Makefile                       # Convenience commands
 ├── extensions.json                # Extensions to install (by ID)
+├── chrome-policies/managed/       # Pre-generated Chrome managed policies
+│   └── policy.json
 ├── extension-configs/             # Per-extension managed policy configs
 │   └── <extension-id>.json
 ├── offline-extensions/            # Optional CRX files for offline installs
+│   ├── updates/<extension-id>.xml  # Local Chrome update manifests
+│   └── <extension-id>.crx
 └── scripts/
-    └── configure.sh               # Generates Chrome policy at build/startup
+    └── configure.sh               # Optional helper to regenerate static policy files
 ```
 
 ## Available Commands

@@ -16,3 +16,6 @@ Example `extensions.json` entry:
 `crx_path` may be relative to this directory or an absolute path inside the image.
 The `version` must match the CRX package version.
 
+Also add a matching update manifest in `updates/<extension-id>.xml` and reference it from
+`chrome-policies/managed/policy.json`. Docker only copies these files into the image; it
+does not generate them during build.
