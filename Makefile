@@ -1,4 +1,7 @@
 .DEFAULT_GOAL := default
+VERSION := $(shell date +%Y%m%d)-$(shell git rev-parse --short=8 HEAD)
+KASMWEB_CHROME_TAG := 1.19.0
+TAG := $(VERSION)-$(KASMWEB_CHROME_TAG)
 
 .PHONY: default build up down restart rebuild logs shell open clean
 
@@ -16,6 +19,10 @@ default:
 
 build:
 	docker compose build
+
+build-img:
+	DOCKER_BUILDKIT=0 docker build -t cyching/kasmweb-chrome:$(TAG) .
+	docker tag cyching/kasmweb-chrome:$(TAG) cyching/kasmweb-chrome:latest
 
 up:
 	docker compose up -d
