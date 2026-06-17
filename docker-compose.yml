@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "6901:6901"
+      - "6902:6901"
     environment:
       VNC_PW: password
       VNC_BLACKLIST_THRESHOLD: 0

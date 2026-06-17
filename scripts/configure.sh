@@ -4,10 +4,13 @@ set -euo pipefail
 EXTENSIONS_JSON="/opt/kasm/extensions.json"
 BLACKLIST_JSON="/opt/kasm/blacklist.json"
 CONFIGS_DIR="/opt/kasm/extension-configs"
+OFFLINE_EXTENSIONS_DIR="/opt/kasm/offline-extensions"
+OFFLINE_UPDATES_DIR="${OFFLINE_EXTENSIONS_DIR}/updates"
 POLICY_DIR="/etc/opt/chrome/policies/managed"
 POLICY_FILE="${POLICY_DIR}/policy.json"
 
 mkdir -p "${POLICY_DIR}"
+mkdir -p "${OFFLINE_UPDATES_DIR}"
 
 URL_BLOCKLIST=$(jq '[.domains[]]' "${BLACKLIST_JSON}")
 
@@ -17,6 +20,36 @@ PROXY_SETTINGS="null"
 while IFS= read -r ext; do
   id=$(echo "${ext}" | jq -r '.id')
   update_url=$(echo "${ext}" | jq -r '.update_url')
+  crx_path=$(echo "${ext}" | jq -r '.crx_path // empty')
+  version=$(echo "${ext}" | jq -r '.version // empty')
+
+  if [[ -n "${crx_path}" ]]; then
+    if [[ -z "${version}" ]]; then
+      echo "Extension ${id} uses crx_path but is missing version" >&2
+      exit 1
+    fi
+
+    if [[ "${crx_path}" != /* ]]; then
+      crx_path="${OFFLINE_EXTENSIONS_DIR}/${crx_path}"
+    fi
+
+    if [[ ! -f "${crx_path}" ]]; then
+      echo "Offline CRX not found for extension ${id}: ${crx_path}" >&2
+      exit 1
+    fi
+
+    update_manifest="${OFFLINE_UPDATES_DIR}/${id}.xml"
+    cat > "${update_manifest}" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
+  <app appid="${id}">
+    <updatecheck codebase="file://${crx_path}" version="${version}" />
+  </app>
+</gupdate>
+EOF
+    update_url="file://${update_manifest}"
+  fi
+
   entry=$(jq -n --arg url "${update_url}" \
     '{installation_mode: "force_installed", update_url: $url, toolbar_pin: "force_pinned"}')
   config_file="${CONFIGS_DIR}/${id}.json"

@@ -3,7 +3,8 @@
     {
       "id": "onnfghpihccifgojkpnnncpagjcdbjod",
       "name": "Proxy Switcher and Manager",
-      "update_url": "https://clients2.google.com/service/update2/crx"
+      "crx_path": "onnfghpihccifgojkpnnncpagjcdbjod.crx",
+      "version": "0.6.7"
     }
   ]
 }

@@ -11,7 +11,7 @@ default:
 	@echo "  make rebuild    Force rebuild from scratch and tail logs"
 	@echo "  make logs       Tail container logs"
 	@echo "  make shell      Open a shell inside the running container"
-	@echo "  make open       Open the browser UI (https://localhost:6901)"
+	@echo "  make open       Open the browser UI (https://localhost:6902)"
 	@echo "  make clean      Stop container and remove image"
 
 build:
@@ -38,7 +38,7 @@ shell:
 	docker compose exec kasm-chrome /bin/bash
 
 open:
-	open https://localhost:6901
+	open https://localhost:6902
 
 clean:
 	docker compose down --rmi local --volumes --remove-orphans
