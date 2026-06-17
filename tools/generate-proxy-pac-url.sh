@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PAC_FILE="${1:-chrome-policies/proxy.pac}"
+PAC_FILE="${1:-tools/proxy.pac}"
 PROFILE_NAME="${2:-Example PAC}"
 
 if [[ ! -f "${PAC_FILE}" ]]; then

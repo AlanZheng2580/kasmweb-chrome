@@ -92,7 +92,7 @@ to show the same PAC profile in the extension UI. Keep both values in sync.
 
 1. Edit the readable PAC source:
    ```bash
-   $EDITOR chrome-policies/proxy.pac
+   $EDITOR tools/proxy.pac
    ```
 
 2. Generate the replacement policy values:
@@ -102,7 +102,7 @@ to show the same PAC profile in the extension UI. Keep both values in sync.
 
    To use a different extension profile name:
    ```bash
-   tools/generate-proxy-pac-url.sh chrome-policies/proxy.pac "Corporate PAC"
+   tools/generate-proxy-pac-url.sh tools/proxy.pac "Corporate PAC"
    ```
 
 3. Copy the generated `"ProxyPacUrl": "data:..."` line into:
@@ -125,12 +125,12 @@ to show the same PAC profile in the extension UI. Keep both values in sync.
 ├── Makefile                       # Convenience commands
 ├── chrome-policies/managed/       # Pre-generated Chrome managed policies
 │   └── policy.json
-├── chrome-policies/proxy.pac      # Editable PAC source for ProxyPacUrl
 ├── offline-extensions/            # Optional CRX files for offline installs
 │   ├── updates/<extension-id>.xml  # Local Chrome update manifests
 │   └── <extension-id>.crx
 ├── tools/                         # Local helper scripts
-│   └── generate-proxy-pac-url.sh
+│   ├── generate-proxy-pac-url.sh
+│   └── proxy.pac                  # Editable PAC source for ProxyPacUrl
 └── kasmvnc.yaml                   # KasmVNC server settings
 ```
 
