@@ -11,7 +11,4 @@ services:
       VNC_BLACKLIST_TIMEOUT: 0
     shm_size: "512m"
     volumes:
-      - ./extensions.json:/opt/kasm/extensions.json:ro
-      - ./blacklist.json:/opt/kasm/blacklist.json:ro
       - ./kasmvnc.yaml:/etc/kasmvnc/kasmvnc.yaml:ro
-      - ./extension-configs:/opt/kasm/extension-configs:ro

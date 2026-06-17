@@ -4,15 +4,13 @@
 
 This repository builds a customized `kasmweb/chrome` container with managed Chrome policies. Core files live at the repository root:
 
-- `Dockerfile` extends the upstream Kasm Chrome image and runs policy configuration.
-- `docker-compose.yml` defines the local `kasm-chrome` service, port mapping, environment, and mounted config files.
+- `Dockerfile` extends the upstream Kasm Chrome image and copies static policy/config files.
+- `docker-compose.yml` defines the local `kasm-chrome` service, port mapping, environment, and KasmVNC mount.
 - `Makefile` provides the standard development commands.
-- `extensions.json` lists forced Chrome extensions by ID.
-- `blacklist.json` lists blocked domains for Chrome policy.
-- `extension-configs/<extension-id>.json` stores optional managed policy for a specific extension.
-- `scripts/configure.sh` generates `/etc/opt/chrome/policies/managed/policy.json`.
-
-`scripts/install-extensions.sh` is retained as an older extension policy generator; prefer `scripts/configure.sh` for current behavior.
+- `chrome-policies/managed/policy.json` is the committed Chrome managed policy.
+- `offline-extensions/<extension-id>.crx` stores bundled CRX packages.
+- `offline-extensions/updates/<extension-id>.xml` stores local Chrome update manifests.
+- `kasmvnc.yaml` customizes the KasmVNC server.
 
 ## Build, Test, and Development Commands
 
@@ -28,14 +26,14 @@ The service is exposed at `https://localhost:6902` from `docker-compose.yml`; cr
 
 ## Coding Style & Naming Conventions
 
-Shell scripts use Bash with `set -euo pipefail`, two-space indentation inside control blocks, uppercase constants for paths, and `jq` for JSON generation. Keep JSON files pretty-printed with two-space indentation. Name extension config files exactly after the Chrome extension ID, for example `extension-configs/onnfghpihccifgojkpnnncpagjcdbjod.json`.
+Keep JSON files pretty-printed with two-space indentation. Name CRX and update manifest files exactly after the Chrome extension ID, for example `offline-extensions/onnfghpihccifgojkpnnncpagjcdbjod.crx` and `offline-extensions/updates/onnfghpihccifgojkpnnncpagjcdbjod.xml`. Policy changes should be made directly in `chrome-policies/managed/policy.json`.
 
 ## Testing Guidelines
 
 There is no automated test suite. Validate changes with:
 
 ```bash
-jq . extensions.json blacklist.json extension-configs/*.json
+jq . chrome-policies/managed/policy.json
 make build
 make up
 make logs

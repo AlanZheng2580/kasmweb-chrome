@@ -2,11 +2,13 @@ FROM kasmweb/chrome:1.19.0
 
 USER root
 
-COPY extensions.json /opt/kasm/extensions.json
-COPY blacklist.json /opt/kasm/blacklist.json
-COPY kasmvnc.yaml /etc/kasmvnc/kasmvnc.yaml
-COPY extension-configs/ /opt/kasm/extension-configs/
-COPY offline-extensions/ /opt/kasm/offline-extensions/
-COPY chrome-policies/managed/ /etc/opt/chrome/policies/managed/
+RUN install -d -o root -g root -m 0755 \
+    /opt/kasm/offline-extensions/updates \
+    /etc/opt/chrome/policies/managed
+
+COPY --chown=root:root --chmod=0644 kasmvnc.yaml /etc/kasmvnc/kasmvnc.yaml
+COPY --chown=root:root --chmod=0644 offline-extensions/*.crx /opt/kasm/offline-extensions/
+COPY --chown=root:root --chmod=0644 offline-extensions/updates/*.xml /opt/kasm/offline-extensions/updates/
+COPY --chown=root:root --chmod=0644 chrome-policies/managed/*.json /etc/opt/chrome/policies/managed/
 
 USER 1000

@@ -2,20 +2,19 @@
 
 Place CRX files in this directory when extensions must install without internet access.
 
-Example `extensions.json` entry:
+Each CRX needs a matching Chrome update manifest under `updates/`.
 
-```json
-{
-  "id": "onnfghpihccifgojkpnnncpagjcdbjod",
-  "name": "Proxy Switcher and Manager",
-  "crx_path": "onnfghpihccifgojkpnnncpagjcdbjod.crx",
-  "version": "1.0.0"
-}
+Example `updates/<extension-id>.xml`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<gupdate xmlns="http://www.google.com/update2/response" protocol="2.0">
+  <app appid="<extension-id>">
+    <updatecheck codebase="file:///opt/kasm/offline-extensions/<extension-id>.crx" version="1.0.0" />
+  </app>
+</gupdate>
 ```
 
-`crx_path` may be relative to this directory or an absolute path inside the image.
-The `version` must match the CRX package version.
-
-Also add a matching update manifest in `updates/<extension-id>.xml` and reference it from
+The `version` must match the CRX package version. Reference the update manifest from
 `chrome-policies/managed/policy.json`. Docker only copies these files into the image; it
 does not generate them during build.
