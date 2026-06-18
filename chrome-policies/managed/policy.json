@@ -3,11 +3,7 @@
     "onnfghpihccifgojkpnnncpagjcdbjod": {
       "installation_mode": "force_installed",
       "update_url": "file:///opt/kasm/offline-extensions/updates/onnfghpihccifgojkpnnncpagjcdbjod.xml",
-      "toolbar_pin": "force_pinned",
-      "managed_policy": {
-        "import-version": 1,
-        "import-json": "{\"profiles\":[\"Example PAC\"],\"profile.Example PAC\":{\"value\":{\"mode\":\"pac_script\",\"pacScript\":{\"mandatory\":true,\"data\":\"function FindProxyForURL(url, host) {\\n  // Bypass proxy for localhost and internal hosts\\n  if (host === 'localhost' || host === '127.0.0.1') {\\n    return 'DIRECT';\\n  }\\n\\n  // Route internal domain through corporate proxy\\n  if (shExpMatch(host, '*.internal.example.com')) {\\n    return 'PROXY proxy.internal.example.com:8080';\\n  }\\n\\n  // Route all other traffic directly\\n  return 'DIRECT';\\n}\"}}}}"
-      }
+      "toolbar_pin": "force_pinned"
     }
   },
   "URLBlocklist": [

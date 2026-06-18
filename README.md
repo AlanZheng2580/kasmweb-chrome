@@ -1,6 +1,6 @@
 # KasmWeb Custom Chrome
 
-A customized KasmWeb Chrome workspace with pre-installed browser extensions managed via Chrome policy.
+A customized KasmWeb Chrome workspace with pre-generated Chrome managed policies.
 
 ## Requirements
 
@@ -26,31 +26,24 @@ Access at **https://localhost:6902** — accept the self-signed certificate warn
 
 > Change `VNC_PW` in `docker-compose.yml` to set a custom password.
 
-## Managing Extensions
+## Managing Chrome Policy
 
 This image uses pre-generated Chrome managed policy files. Docker only copies the
 files into the image; it does not generate policy during build or startup.
+Edit `chrome-policies/managed/policy.json` directly for URL blocklists, proxy
+settings, and other Chrome policies. Rebuild the image after policy changes:
 
-### Add an online extension
+```bash
+make restart
+```
 
-1. Find the extension ID from the Chrome Web Store URL:
-   `https://chromewebstore.google.com/detail/<name>/<extension-id>`
-2. Add an entry under `ExtensionSettings` in `chrome-policies/managed/policy.json`:
-   ```json
-   "<extension-id>": {
-     "installation_mode": "force_installed",
-     "update_url": "https://clients2.google.com/service/update2/crx",
-     "toolbar_pin": "force_pinned"
-   }
-   ```
-3. Rebuild:
-   ```bash
-   make restart
-   ```
+## Offline Extension
 
-### Add an offline extension
+The Proxy Switcher and Manager extension is still installed offline so the UI is
+available to users. Its CRX lives in `offline-extensions/`, and Chrome installs it
+from the local update manifest in `offline-extensions/updates/`.
 
-For networks that cannot reach the Chrome Web Store, package the CRX into the Docker image:
+To add or update an offline extension:
 
 1. Put the CRX file in `offline-extensions/`, for example:
    `offline-extensions/<extension-id>.crx`
@@ -65,7 +58,8 @@ For networks that cannot reach the Chrome Web Store, package the CRX into the Do
    </gupdate>
    ```
 
-3. Reference the local update manifest from `chrome-policies/managed/policy.json`:
+3. Reference that local update manifest from
+   `chrome-policies/managed/policy.json -> ExtensionSettings`:
    ```json
    "<extension-id>": {
      "installation_mode": "force_installed",
@@ -73,45 +67,36 @@ For networks that cannot reach the Chrome Web Store, package the CRX into the Do
      "toolbar_pin": "force_pinned"
    }
    ```
-4. Rebuild the image:
+
+4. Rebuild and restart:
    ```bash
-   make rebuild
+   make restart
    ```
 
-### Remove an extension
-
-Remove the entry from `chrome-policies/managed/policy.json`, delete the CRX and
-update XML if they are no longer needed, then run `make restart`.
+Do not add `managed_policy` under `ExtensionSettings`; Chrome does not support
+that field there. Proxy routing is configured through Chrome's native
+`ProxySettings` policy instead.
 
 ## Managing Proxy PAC
 
 Chrome uses the native policy value at `ProxySettings.ProxyPacUrl` in
-`chrome-policies/managed/policy.json`. Proxy Switcher and Manager uses
-`ExtensionSettings.onnfghpihccifgojkpnnncpagjcdbjod.managed_policy.import-json`
-to show the same PAC profile in the extension UI. Keep both values in sync.
+`chrome-policies/managed/policy.json`. Proxy routing is controlled by Chrome's
+native `ProxySettings` policy.
 
 1. Edit the readable PAC source:
    ```bash
    $EDITOR tools/proxy.pac
    ```
 
-2. Generate the replacement policy values:
+2. Generate the replacement policy value:
    ```bash
    tools/generate-proxy-pac-url.sh
-   ```
-
-   To use a different extension profile name:
-   ```bash
-   tools/generate-proxy-pac-url.sh tools/proxy.pac "Corporate PAC"
    ```
 
 3. Copy the generated `"ProxyPacUrl": "data:..."` line into:
    `chrome-policies/managed/policy.json -> ProxySettings.ProxyPacUrl`
 
-4. Copy the generated `"import-json": "..."` line into:
-   `chrome-policies/managed/policy.json -> ExtensionSettings.onnfghpihccifgojkpnnncpagjcdbjod.managed_policy.import-json`
-
-5. Rebuild and restart:
+4. Rebuild and restart:
    ```bash
    make restart
    ```
@@ -125,8 +110,8 @@ to show the same PAC profile in the extension UI. Keep both values in sync.
 ├── Makefile                       # Convenience commands
 ├── chrome-policies/managed/       # Pre-generated Chrome managed policies
 │   └── policy.json
-├── offline-extensions/            # Optional CRX files for offline installs
-│   ├── updates/<extension-id>.xml  # Local Chrome update manifests
+├── offline-extensions/            # CRX files and local update manifests
+│   ├── updates/<extension-id>.xml
 │   └── <extension-id>.crx
 ├── tools/                         # Local helper scripts
 │   ├── generate-proxy-pac-url.sh
